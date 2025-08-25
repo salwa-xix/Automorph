@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Automorph</title>
+  <style>
+    :root{
+      --bg-0:#0f1217; --bg-1:#121722; --bg-2:#0c1118;
+      --card:#151a22; --card-2:#1b2230; --muted:#a7b0ba; --text:#f3f4f6;
+      --accent:#ef4444; --accent-2:#f59e0b; --accent-3:#94a3b8;
+      --danger:#ef4444; --warn:#f59e0b; --ok:#22c55e;
+      --soft:#12161d; --chip:#141a21;
+      --stroke: rgba(255,255,255,.06); --stroke-strong: rgba(255,255,255,.12);
+      --shadow: 0 12px 38px rgba(0,0,0,.44), 0 4px 16px rgba(0,0,0,.32);
+
+      /* CTA (tracking button) */
+      --cta-1:#60a5fa; --cta-2:#2563eb;
+    }
+
+    *{ box-sizing: border-box }
+    html,body{ height:100% }
+    body{
+      margin:0; color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Tahoma, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background:
+        radial-gradient(1000px 700px at 15% -10%, rgba(239,68,68,.16), transparent 60%),
+        radial-gradient(1000px 700px at 85% -15%, rgba(245,158,11,.12), transparent 62%),
+        radial-gradient(1600px 1000px at 50% 110%, rgba(148,163,184,.10), transparent 65%),
+        conic-gradient(from 210deg at 70% 30%, rgba(255,255,255,.05), transparent 30%, rgba(255,255,255,.03) 60%, transparent 100%),
+        radial-gradient(1800px 1100px at 50% 0%, var(--bg-1), transparent 70%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2) 55%, var(--bg-0));
+      background-attachment: fixed; overflow-x:hidden; position: relative; isolation:isolate;
+    }
+    body::before{
+      content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+      background: radial-gradient(1200px 800px at 50% 20%, transparent 40%, rgba(0,0,0,.18) 100%);
+      mix-blend-mode: multiply;
+    }
+    body::after{
+      content:""; position:fixed; inset:-10%; z-index:0; pointer-events:none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="120" height="120" filter="url(%23n)" opacity="0.045"/></svg>');
+      background-size:120px 120px;
+    }
+
+    .wrap{ position:relative; z-index:1; max-width:1160px; margin:40px auto; padding:0 18px; }
+    header{ display:flex; gap:14px; align-items:center; margin-bottom:22px }
+
+    .logo{ width:54px; height:54px; border-radius:50%; position:relative;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.12), transparent 60%),
+        conic-gradient(#ffffff 0 180deg, var(--accent) 180deg 360deg);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset, 0 15px 40px rgba(0,0,0,.45);
+      isolation:isolate;
+    }
+
+    h1{ font-size:clamp(22px, 2.6vw, 32px); font-weight:900; margin:0; letter-spacing:.3px }
+    .brand-accent{ color:var(--text); text-shadow:none }
+    .sub{ color:var(--muted); font-size:14px }
+
+    .grid{ display:grid; grid-template-columns: 1.15fr .85fr; gap:18px }
+    @media (max-width: 900px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      position:relative; border-radius:18px; padding:16px;
+      transform: translateZ(0); animation: float 10s ease-in-out infinite;
+      background:linear-gradient(180deg, #161b23, #0f141a); border:1px solid var(--stroke-strong);
+      box-shadow: var(--shadow);
+    }
+    .card:nth-child(2){ animation-delay:-2.5s }
+    @keyframes float{ 0%,100%{ transform: translateY(0) } 50%{ transform: translateY(-4px) } }
+    .card h2{ font-size:18px; margin:0 0 12px; letter-spacing:.2px; color:#eaeef6; text-shadow:0 1px 0 rgba(0,0,0,.25) }
+
+    label{ display:block; font-size:13px; color:var(--muted); margin-bottom:6px }
+    input[type="number"]{
+      width:100%; padding:12px 12px; border-radius:12px; border:1px solid var(--stroke-strong);
+      background: linear-gradient(180deg, #12161c, #0f141a); color:var(--text);
+      outline:none; transition: border .2s, box-shadow .2s, transform .06s;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+    }
+    input[type="number"]:focus{ border-color: var(--accent); box-shadow: 0 0 0 3px rgba(239,68,68,.18); }
+
+    .row{ display:grid; grid-template-columns: repeat(3, 1fr) 200px; gap:10px; align-items:end }
+    @media (max-width: 680px){ .row{ grid-template-columns: 1fr; } }
+
+    button{ padding:11px 14px; border-radius:12px; border:1px solid transparent; cursor:pointer; font-weight:800; letter-spacing:.2px; transition: transform .06s ease, filter .2s ease; display:inline-flex; align-items:center; gap:8px }
+    button:active{ transform: translateY(1px) scale(.99) }
+    .primary{ color:#160b0b; background: linear-gradient(180deg, #f05353, #d63a3a); border:1px solid rgba(239,68,68,.38) }
+    .primary:hover{ filter: brightness(1.04) }
+    .primary:focus-visible{ outline:2px solid rgba(239,68,68,.5); outline-offset:2px }
+    .ghost{ background: linear-gradient(180deg, #171b22, #141820); color:var(--text); border:1px solid var(--stroke-strong) }
+    .ghost:hover{ border-color: var(--accent-3) }
+    .ghost:focus-visible{ outline:2px solid rgba(148,163,184,.45); outline-offset:2px }
+    .danger{ color:#180b0b; background: linear-gradient(180deg, #f05353, #b91c1c); border:1px solid rgba(239,68,68,.38) }
+    .danger:hover{ filter: brightness(1.02) }
+    .danger:focus-visible{ outline:2px solid rgba(239,68,68,.5); outline-offset:2px }
+
+    /* === CTA (بدون توهّج/ظل) === */
+    .cta{
+      color:#06121e;
+      background: linear-gradient(180deg, var(--cta-1), var(--cta-2));
+      border:1px solid rgba(37,99,235,.45);
+      /* removed glow: */
+      box-shadow: none;
+    }
+    .cta:hover{ filter:brightness(1.03) }
+    .cta:focus-visible{ outline:2px solid rgba(37,99,235,.5); outline-offset:2px }
+
+    .table-wrap{ overflow:auto; border-radius:12px; border:1px solid var(--stroke); }
+    table{ width:100%; border-collapse:collapse; font-size:14px; }
+    thead th{ position:sticky; top:0; background:#1a1f26; z-index:1; color:#e2e8f0 }
+    th, td{ border-bottom:1px solid rgba(255,255,255,.06); padding:12px 10px; text-align:center }
+    tbody tr:hover{ background: rgba(255,255,255,.03) }
+
+    .muted{ color:var(--muted) }
+    .bad{ color:var(--danger); font-weight:800 }
+    .warn{ color:var(--warn); font-weight:800 }
+    .ok{ color:var(--ok); font-weight:800 }
+
+    .chips{ display:flex; flex-wrap:wrap; gap:8px }
+    .chip{ background: var(--chip); border:1px solid var(--stroke-strong); color:#e5e7eb; padding:8px 10px; border-radius:999px; font-size:12px }
+
+    .settings{ display:grid; grid-template-columns: 1fr 1fr; gap:10px }
+    @media (max-width: 720px){ .settings{ grid-template-columns: 1fr; } }
+
+    .out{ font-size:15px; line-height:1.9; }
+    .time{ font-size: clamp(14px, 2vw, 18px); font-weight:900; letter-spacing:.2px; margin:6px 0 0; color:#e5e7eb }
+
+    .hint{ font-size:12px; color:var(--muted); margin-top:6px }
+    .footer{ color:var(--muted); font-size:12px; margin-top:14px; opacity:.8; text-align:center }
+    .split{ height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent); margin:12px 0 }
+
+    .note{ font-size:13px; padding:10px 12px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)); border:1px dashed var(--stroke-strong) }
+    .notice{ color:#e5e7eb }
+
+    .on{ color: var(--ok); font-weight: 800 }
+    .off{ color: var(--danger); font-weight: 800 }
+
+    /* ================= Modal ================= */
+    .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; place-items:center; z-index:50; backdrop-filter: blur(2px); }
+    .modal{ width:min(920px, 92vw); background:linear-gradient(180deg, #161b23, #0f141a); border:1px solid var(--stroke-strong); border-radius:18px; box-shadow: var(--shadow); overflow:hidden }
+    .modal header{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--stroke) }
+    .modal h3{ margin:0; font-size:16px; letter-spacing:.3px }
+    .modal .x{ width:34px; height:34px; display:grid; place-items:center; border-radius:10px; border:1px solid var(--stroke); background:linear-gradient(180deg, #171b22,#141820); cursor:pointer }
+    .modal .x:hover{ border-color: var(--accent-3) }
+
+    .modal .body{ padding:16px }
+
+    /* Timeline */
+    .timeline{ display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap }
+    .step{ display:flex; align-items:center; gap:8px; filter:saturate(.98) }
+    .dot{
+      width:22px; height:22px; border-radius:50%;
+      display:grid; place-items:center;
+      border:1px solid var(--stroke-strong);
+      background:linear-gradient(180deg, #151a22, #12161d);
+      color:#cbd5e1;
+    }
+    .label{ font-size:13px; color:#e5e7eb }
+    .connector{ width:42px; height:2px; background:linear-gradient(90deg, rgba(255,255,255,.12), rgba(255,255,255,.05)); border-radius:2px }
+    .step.done .dot{ background:#22c55e; border-color:transparent; color:#08140b }
+    .step.current .dot{ box-shadow:none; border-color:rgba(34,197,94,.55); }
+    .step.perma .dot{ background:linear-gradient(180deg,#1b2330,#151a22); border-color:var(--stroke-strong); color:#94a3b8; }
+    .step.locked{ opacity:.6; filter:saturate(.7) }
+
+    /* ====== Real-time blocks: صف واحد ببلوكات ====== */
+    .rtbar{
+      display:grid;
+      grid-auto-flow: column;                 /* صف أفقي */
+      grid-auto-columns: minmax(180px, 1fr);  /* كل بلوك عرض أدنى ثابت */
+      gap:10px;
+      margin-bottom:12px;
+      overflow-x:auto;                        /* سكرول أفقي عند الحاجة */
+      padding-bottom:6px;                     /* مساحة صغيرة تحت للسكرول */
+      scrollbar-width: thin;
+    }
+    /* اجعل KPIs صف أفقي كبلاكات */
+.kpis{
+  display: grid;
+  grid-auto-flow: column;                /* يمشي أفقي */
+  grid-auto-columns: minmax(160px, 1fr); /* عرض ثابت لكل بلوك */
+  gap: 10px;
+  overflow-x: auto;                      /* سكرول عند الحاجة */
+  padding-bottom: 6px;                   /* مساحة لشريط السكرول */
+  scrollbar-width: thin;
+}
+.kpis .kpi{
+  background: linear-gradient(180deg,#171d26,#121821);
+  border: 1px solid var(--stroke);
+  padding: 12px;
+  border-radius: 12px;
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.kpis .kpi .l{ font-size:12px; color:var(--muted); margin-bottom:4px }
+.kpis .kpi .v{ font-size:18px; font-weight:900; color:#eaeef6; line-height:1.2 }
+
+@media (max-width: 640px){
+  .kpis{ 
+    grid-auto-columns: minmax(100px,1fr);  /* البلوكات أضيق */
+    gap:6px;
+  }
+  .kpis .kpi{ 
+    padding:8px; 
+    min-height:48px; 
+    border-radius:8px;
+  }
+  .kpis .kpi .l{ font-size:10px }
+  .kpis .kpi .v{ font-size:13px }
+
+  /* برضو صغر الخطوط في باقي النصوص */
+  body{ font-size:13px }
+  h2{ font-size:16px }
+  .time{ font-size:14px }
+  .note{ font-size:12px }
+  button{ padding:8px 10px; font-size:13px }
+  table{ font-size:12px }
+}
+
+    /* Conveyor sim */
+    .sim{ margin-top:8px; border:1px solid var(--stroke); border-radius:14px; padding:14px; background:linear-gradient(180deg, #131821, #0f141a); }
+    .belt{ position:relative; height:52px; background:#0e141c; border:1px solid var(--stroke-strong); border-radius:12px; overflow:hidden; }
+    .belt.flow::before{
+      content:""; position:absolute; inset:0;
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 18px, transparent 18px 36px);
+      animation: beltMove 1.1s linear infinite; opacity:.35;
+    }
+    .belt::after{ content:""; position:absolute; inset:0; box-shadow: inset 0 6px 14px rgba(0,0,0,.35), inset 0 -6px 14px rgba(0,0,0,.25) }
+    @keyframes beltMove{ from{ background-position:0 0 } to{ background-position:-120px 0 } }
+
+    .lane{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px; margin-top:12px }
+    .branch{ position:relative; height:40px; border-radius:10px; border:1px dashed var(--stroke-strong); background:linear-gradient(180deg, #10151d, #0c1118); overflow:hidden }
+    .branch .label{ position:absolute; left:8px; top:6px; font-size:12px; color:var(--muted) }
+    .branch.idle{ opacity:.45; filter:saturate(.5) }
+    .branch.active{ box-shadow:none; border-style: solid }
+
+    .box{ position:absolute; top:9px; width:22px; height:22px; border-radius:6px; background:#d1d5db; border:1px solid rgba(0,0,0,.3);
+      animation: move 5.2s linear forwards; transform: translateX(-30px);
+    }
+    .box.small{ height:18px; width:18px; top:11px }
+    .box.medium{ height:22px; width:22px }
+    .box.large{ height:28px; width:28px; top:8px }
+    @keyframes move{ to{ transform: translateX(calc(100% + 60px)); } }
+
+    @media (max-width: 640px){
+      body{ min-height:100svh; display:grid; place-items:center; padding:18px; }
+      .wrap{ margin:0 auto; padding:0; width:100%; max-width:760px; }
+      header{ justify-content:center; text-align:center }
+    }
+
+
+    /* 📱 نسخة مضغوطة للموبايل */
+@media (max-width: 640px){
+  body{ font-size:12px }
+
+  h1{ font-size:18px }
+  h2{ font-size:14px; margin-bottom:8px }
+  .sub{ font-size:11px }
+
+  /* أزرار */
+  button{ 
+    padding:6px 8px; 
+    font-size:12px; 
+    border-radius:8px;
+  }
+
+  /* حقول إدخال */
+  input[type="number"]{
+    padding:8px; 
+    font-size:12px; 
+    border-radius:8px;
+  }
+
+  /* جدول */
+  table{ font-size:11px }
+  th, td{ padding:6px 4px }
+
+  /* الملاحظات / النصوص */
+  .note{ font-size:11px; padding:6px }
+  .time{ font-size:12px; margin-top:4px }
+  .hint, .footer{ font-size:10px }
+
+  /* KPIs */
+  .kpis{ 
+    grid-auto-columns: minmax(80px,1fr); 
+    gap:5px; 
+  }
+  .kpis .kpi{ 
+    padding:6px; 
+    min-height:40px; 
+    border-radius:6px;
+  }
+  .kpis .kpi .l{ font-size:9px }
+  .kpis .kpi .v{ font-size:12px }
+
+  /* البوب-أب */
+  .modal{ width:95vw }
+  .modal h3{ font-size:13px }
+  .modal .body{ padding:10px }
+
+
+  .rtbar{ 
+    grid-auto-columns: minmax(90px,1fr); 
+    gap:5px; 
+  }
+  .rtbar .kpi{ padding:6px; min-height:40px; border-radius:6px }
+  .rtbar .kpi .l{ font-size:9px }
+  .rtbar .kpi .v{ font-size:12px }
+
+  /* البوب-بيج */
+  .modal{ width:95vw }
+  .modal h3{ font-size:13px }
+  .modal .body{ padding:10px }
+}
+
+  /* ✅ خط الإنتاج (تصغيره) */
+  .belt{ height:36px }               /* كان ~52px */
+  .branch{ height:30px }             /* كان ~40px */
+  .box{ width:16px; height:16px }    /* أصغر صناديق */
+  .box.small{ width:14px; height:14px; top:8px }
+  .box.medium{ width:16px; height:16px; top:9px }
+  .box.large{ width:20px; height:20px; top:7px }
+
+  @media (max-width: 640px){
+  .timeline .step .dot{ width:18px; height:18px }
+  .timeline .step .label{ font-size:11px }
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Auto<span class="brand-accent">morph</span></h1>
+        <div class="sub" id="headerClock"></div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- INPUT -->
+      <section class="card" aria-label="Input Panel">
+        <h2>Add Product</h2>
+        <div class="row" role="group" aria-label="Add Product">
+          <div>
+            <label for="len">Length (m) — ≤ 6</label>
+            <input id="len" type="number" min="0.1" max="6" step="0.01" placeholder="e.g., 1.20"/>
+          </div>
+          <div>
+            <label for="wid">Width (m) — ≤ 6</label>
+            <input id="wid" type="number" min="0.1" max="6" step="0.01" placeholder="e.g., 1.20"/>
+          </div>
+          <div>
+            <label for="qty">Quantity</label>
+            <input id="qty" type="number" min="1" step="1" value="1"/>
+          </div>
+          <div style="display:flex; gap:8px; align-items:flex-end;">
+            <button class="primary" id="addBtn"><span class="i i-plus"></span>Add</button>
+            <button class="ghost" id="clearBtn" title="Clear list"><span class="i i-trash"></span>Clear</button>
+          </div>
+        </div>
+        <div id="msg" class="hint" aria-live="polite"></div>
+
+        <div class="table-wrap">
+          <table id="tbl" aria-label="Products list">
+            <thead>
+              <tr>
+                <th>#</th><th>Length (m)</th><th>Width (m)</th><th>Qty</th><th>Area (m²)</th><th>Size</th><th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- OUTPUT -->
+      <section class="card" aria-label="Output Panel">
+        <h2>Settings</h2>
+        <div class="out" id="settingsOut">
+          <div class="muted">Add items to view settings and predictions.</div>
+        </div>
+        <div class="split"></div>
+        <div>
+          <div class="chips" id="chips"></div>
+          <p class="time" id="etaAI"><strong>Total Time (AI):</strong> —</p>
+          <p class="time" id="etaManual" style="opacity:.9"><strong>Total Time (Manual):</strong> —</p>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+          <!-- شِلنا btn-pulse -->
+          <button class="cta" id="trackBtn" title="Open tracking"><span class="i i-track"></span>Tracking</button>
+        </div>
+
+        <div class="split"></div>
+        <div class="note notice">Note: The prediction uses an embedded linear model for demo purposes. Numbers are approximate.</div>
+      </section>
+    </div>
+
+    <p class="footer">© Demo. 2025 || AUTOMORPH.</p>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="trackTitle">
+      <header>
+        <h3 id="trackTitle">Order Tracking</h3>
+        <button class="x" id="xClose" aria-label="Close"><span class="i i-x"></span></button>
+      </header>
+      <div class="body">
+        <!-- Timeline -->
+        <div class="timeline" id="timeline">
+          <div class="step done" data-k="time">
+            <div class="dot"><span class="i i-clock"></span></div><div class="label">Time Order</div>
+          </div>
+          <div class="connector"></div>
+          <div class="step locked" data-k="paper" title="Will complete after processing">
+            <div class="dot"><span class="i i-check"></span></div><div class="label">Paper</div>
+          </div>
+          <div class="connector"></div>
+          <div class="step locked perma" data-k="delivery" title="Delivery stays disabled">
+            <div class="dot"><span class="i i-truck"></span></div><div class="label">Delivery</div>
+          </div>
+        </div>
+
+        <!-- Real-time blocks: صف واحد -->
+        <div class="rtbar">
+          <div class="kpi"><div class="l">Now</div><div class="v" id="rtNow">--:--:--</div></div>
+          <div class="kpi"><div class="l">Opened at</div><div class="v" id="rtOpened">--:--:--</div></div>
+          <div class="kpi"><div class="l">Processed</div><div class="v"><span id="rtDone">0</span>/<span id="rtTotal">0</span></div></div>
+          <div class="kpi"><div class="l">Belt speed</div><div class="v" id="rtSpeed">—</div></div>
+        </div>
+
+        <!-- Static counts (mirrors) -->
+        <div class="kpis" id="kpis"></div>
+
+        <!-- Simulation -->
+        <div class="sim">
+          <div class="belt" id="belt"></div>
+          <div class="lane">
+            <div class="branch" id="bSmall"><span class="label">Small branch</span></div>
+            <div class="branch" id="bMedium"><span class="label">Medium branch</span></div>
+            <div class="branch" id="bLarge"><span class="label">Large branch</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ICONS = {
+      plus:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+      trash:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 6h18M9 6V4h6v2M7 6l1 14h8l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
+      track:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 6h12v8H3zM15 10h4l2 3v1h-6zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm10 0a2 2 0 1 0-.001-4.001A2 2 0 0 0 17 19z" fill="currentColor"/></svg>',
+      x:'<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+      clock:'<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
+      check:'<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/></svg>',
+      truck:'<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M3 7h11v7H3zM14 10h4l2 3v1h-6z" fill="currentColor"/><circle cx="7" cy="18" r="2" fill="currentColor"/><circle cx="17" cy="18" r="2" fill="currentColor"/></svg>',
+      dotOn:'<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="#22c55e"/></svg>',
+      dotOff:'<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="#ef4444"/></svg>',
+      del:'<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+    };
+    function hydrateIcons(){
+      document.querySelectorAll('.i').forEach(el=>{
+        const c = Array.from(el.classList).find(k=>k.startsWith('i-')) || '';
+        const key = c.replace('i-','');
+        el.innerHTML = ICONS[key] || '';
+      });
+    }
+
+    const training = [
+      [0.5,0.5,10,120],[1.0,1.0,20,260],[1.5,1.5,15,310],[2.0,2.0,10,290],
+      [2.0,1.0,30,420],[2.5,2.0,25,620],[3.0,3.0,12,540],[3.0,2.0,40,860],
+      [4.0,1.5,35,980],[4.0,4.0,8,700],[4.5,3.5,20,1100],[5.0,2.0,50,1500],
+      [5.0,5.0,6,980],[5.5,1.0,60,1600],[5.5,3.0,30,1500],[6.0,1.5,45,1750],
+      [6.0,2.5,20,1400],[6.0,6.0,4,1200],
+    ];
+
+    const mat = {
+      T: A => A[0].map((_, i) => A.map(r => r[i])),
+      dot: (A, B) => A.map(r => B[0].map((_, j) => r.reduce((s, v, k) => s + v * B[k][j], 0))),
+      inv4: M => { const n=4; const A=M.map(r=>r.slice()); const I=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
+        for(let c=0;c<n;c++){ let r=c; for(let i=c+1;i<n;i++) if(Math.abs(A[i][c])>Math.abs(A[r][c])) r=i; if(Math.abs(A[r][c])<1e-12) throw new Error('singular');
+          if(r!==c){ [A[c],A[r]]=[A[r],A[c]]; [I[c],I[r]]=[I[r],I[c]]; }
+          const piv=A[c][c]; for(let j=0;j<n;j++){ A[c][j]/=piv; I[c][j]/=piv; }
+          for(let i=0;i<n;i++) if(i!==c){ const f=A[i][c]; for(let j=0;j<n;j++){ A[i][j]-=f*A[c][j]; I[i][j]-=f*I[c][j]; } }
+        } return I; }
+    };
+
+    function trainLinearModel(samples){
+      const X = samples.map(([L,W,Q]) => [1, L*W, Math.max(L,W), Q]);
+      const y = samples.map(s => [s[3]]);
+      const Xt = mat.T(X);
+      const XtX = mat.dot(Xt, X);
+      const XtX_inv = mat.inv4(XtX);
+      const XtY = mat.dot(Xt, y);
+      const B = mat.dot(XtX_inv, XtY);
+      return B.map(r=>r[0]);
+    }
+    const BETA = trainLinearModel(training);
+
+    function predictMinutes(len, wid, qty){
+      const area=len*wid, maxD=Math.max(len,wid);
+      let ml = BETA[0] + BETA[1]*area + BETA[2]*maxD + BETA[3]*qty;
+      ml = Math.max(5, ml) * 0.12;
+      const perPiece = 1.0 + area*1.2 + maxD*0.4;
+      const setup    = 1.5;
+      const hu = Math.max(2, perPiece*qty + setup);
+      return Math.round(0.3*ml + 0.7*hu);
+    }
+
+    function factorySettings(rows){
+      const totalQty = rows.reduce((s,r)=>s+r.qty,0);
+      const maxWid = Math.max(...rows.map(r=>r.wid));
+      const maxLen = Math.max(...rows.map(r=>r.len));
+      const beltW = Math.min(3.0, Math.max(1.0, Math.ceil((maxWid+0.2)*5)/5));
+      const speed = Math.min(30, Math.max(8, Math.round(8 + Math.max(maxLen,maxWid)*2)));
+      return { totalQty, maxWid, beltW, speed };
+    }
+
+    function predictTotalAI(rows){
+      const setupPerBatch = 3;
+      const changeover    = Math.max(0, rows.length-1)*2;
+      const work = rows.reduce((s,r)=> s + predictMinutes(r.len,r.wid,r.qty), 0);
+      const parallelEff = 0.95;
+      return Math.round( (work + rows.length*setupPerBatch + changeover) / parallelEff );
+    }
+    function predictTotalManual(rows){
+      const setupPerBatch = 4;
+      const changeover    = Math.max(0, rows.length-1)*3;
+      const work = rows.reduce((s,r)=> s + predictMinutes(r.len,r.wid,r.qty), 0);
+      const overhead = 1.08;
+      return Math.round( (work + rows.length*setupPerBatch + changeover) * overhead );
+    }
+
+    const $ = s => document.querySelector(s);
+    const tbody = $('#tbl tbody');
+    const msg = $('#msg');
+    const chips = $('#chips');
+    const etaAI = $('#etaAI');
+    const etaManual = $('#etaManual');
+    const settingsOut = $('#settingsOut');
+    const trackBtn = $('#trackBtn');
+    const modal = $('#modal');
+    const xClose = $('#xClose');
+    const kpis = $('#kpis');
+    const belt = $('#belt');
+    const bSmall = $('#bSmall');
+    const bMedium = $('#bMedium');
+    const bLarge = $('#bLarge');
+    const headerClock = $('#headerClock');
+
+    const rtNow = $('#rtNow');
+    const rtOpened = $('#rtOpened');
+    const rtDone = $('#rtDone');
+    const rtTotal = $('#rtTotal');
+    const rtSpeed = $('#rtSpeed');
+
+    let rows = [];
+    let clockTimer = null;
+    let openedAt = null;
+
+    let remainingSmall = 0, remainingMedium = 0, remainingLarge = 0;
+    let initialCounts = {small:0, medium:0, large:0, total:0};
+
+    function formatMinutes(min){
+      if(min <= 90) return `${min} min`;
+      const h=Math.floor(min/60), m=min%60;
+      return `${h}h ${m}m`;
+    }
+    const fmt2 = n => n.toFixed(2);
+    const catKeyOf = (L,W) => (Math.max(L,W)<=2 ? 'small' : (Math.max(L,W)<=4 ? 'medium' : 'large'));
+    const labelCat = k => k==='small'?'Small':(k==='medium'?'Medium':'Large');
+    function formatTime(d){ const pad=x=>String(x).padStart(2,'0'); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
+
+    function cmp(a,b){ return (b.qty - a.qty) || (b.load - a.load) || (b.area - a.area); }
+
+    function reorderNoConsecutive(list){
+      const small  = list.filter(x=>x.cat==='small').sort(cmp);
+      const medium = list.filter(x=>x.cat==='medium').sort(cmp);
+      const large  = list.filter(x=>x.cat==='large').sort(cmp);
+
+      function popBestNot(lastCat){
+        const cands = [];
+        if(small.length  && lastCat!=='small')  cands.push({cat:'small',  item:small[0]});
+        if(medium.length && lastCat!=='medium') cands.push({cat:'medium', item:medium[0]});
+        if(large.length  && lastCat!=='large')  cands.push({cat:'large',  item:large[0]});
+        if(cands.length){
+          cands.sort((a,b)=>cmp(a.item,b.item));
+          const chosen = cands[0];
+          if(chosen.cat==='small')  return small.shift();
+          if(chosen.cat==='medium') return medium.shift();
+          return large.shift();
+        }
+        const any = [];
+        if(small.length)  any.push({cat:'small',  item:small[0]});
+        if(medium.length) any.push({cat:'medium', item:medium[0]});
+        if(large.length)  any.push({cat:'large',  item:large[0]});
+        if(!any.length) return null;
+        any.sort((a,b)=>cmp(a["item"],b["item"]));
+        const fallback = any[0];
+        if(fallback.cat==='small')  return small.shift();
+        if(fallback.cat==='medium') return medium.shift();
+        return large.shift();
+      }
+
+      const out = [];
+      let last = null;
+      while (small.length || medium.length || large.length){
+        const next = popBestNot(last);
+        if(!next) break;
+        out.push(next);
+        last = next.cat;
+      }
+      return out;
+    }
+
+    function setStepState(key, state){
+      const s = document.querySelector(`.step[data-k="${key}"]`);
+      if(!s) return;
+      s.classList.remove('done','current','locked');
+      if(s.classList.contains('perma')){ s.classList.add('locked','perma'); return; }
+      s.classList.add(state);
+    }
+    function initTimeline(){
+      setStepState('time','done');
+      setStepState('paper','locked');
+      setStepState('delivery','locked');
+    }
+    function markPaperDone(){ setStepState('paper','done'); }
+
+    function countBySize(){
+      const c = { small:0, medium:0, large:0, total:0 };
+      rows.forEach(r=>{ const k=catKeyOf(r.len,r.wid); c[k]+=r.qty; c.total+=r.qty; });
+      return c;
+    }
+    function buildKpisStatic(){
+      const c = initialCounts;
+      kpis.innerHTML = '';
+      [
+        ['Total items', c.total],
+        ['Small', c.small],
+        ['Medium', c.medium],
+        ['Large', c.large]
+      ].forEach(([label,val])=>{
+        const div=document.createElement('div');
+        div.className='kpi';
+        div.innerHTML = `<div class="l">${label}</div><div class="v">${val}</div>`;
+        kpis.appendChild(div);
+      });
+    }
+    function updateKpisLive(){
+      const doneSmall = initialCounts.small - remainingSmall;
+      const doneMedium= initialCounts.medium - remainingMedium;
+      const doneLarge = initialCounts.large - remainingLarge;
+      const doneTotal = doneSmall + doneMedium + doneLarge;
+
+      rtDone.textContent = doneTotal;
+      rtTotal.textContent = initialCounts.total;
+
+      if(remainingSmall<=0 && remainingMedium<=0 && remainingLarge<=0 && initialCounts.total>0){
+        markPaperDone();
+        belt.classList.remove('flow');
+      }
+    }
+
+    function clearSim(){
+      belt.innerHTML='';
+      bSmall.innerHTML='<span class="label">Small branch</span>';
+      bMedium.innerHTML='<span class="label">Medium branch</span>';
+      bLarge.innerHTML='<span class="label">Large branch</span>';
+      [bSmall,bMedium,bLarge].forEach(b=>{ b.classList.remove('active'); b.classList.add('idle'); });
+      belt.classList.remove('flow');
+    }
+
+    function makeBox(size, delaySec=0, onEnd=()=>{}){
+      const box = document.createElement('div');
+      box.className = `box ${size}`;
+      box.style.animationDelay = `${delaySec}s`;
+      box.addEventListener('animationend', ()=>{ box.remove(); onEnd(); });
+      return box;
+    }
+
+    function buildSim(){
+      clearSim();
+      const c = countBySize();
+
+      const act = (el, on) => { el.classList.toggle('active', on); el.classList.toggle('idle', !on); };
+      act(bSmall,  c.small>0);
+      act(bMedium, c.medium>0);
+      act(bLarge,  c.large>0);
+
+      initialCounts = { ...c };
+      remainingSmall  = c.small;
+      remainingMedium = c.medium;
+      remainingLarge  = c.large;
+
+      buildKpisStatic();
+      updateKpisLive();
+
+      if(c.total === 0) return;
+
+      belt.classList.add('flow');
+
+      const total = Math.min(12, Math.max(3, c.total));
+      for(let i=0;i<total;i++){
+        const size = (i%3===0 && c.small>0) ? 'small'
+                    : (i%3===1 && c.medium>0) ? 'medium'
+                    : (c.large>0 ? 'large' : 'small');
+        belt.appendChild(makeBox(size, i*0.35));
+      }
+
+      const lanes = [ ['small', bSmall, c.small], ['medium', bMedium, c.medium], ['large', bLarge, c.large] ];
+      lanes.forEach(([size, laneEl, n])=>{
+        const count = Math.min(12, Math.max(0, n));
+        for(let i=0;i<count;i++){
+          const onEnd = ()=>{
+            if(size==='small'){  remainingSmall  = Math.max(0, remainingSmall-1); }
+            if(size==='medium'){ remainingMedium = Math.max(0, remainingMedium-1); }
+            if(size==='large'){  remainingLarge  = Math.max(0, remainingLarge-1); }
+            updateKpisLive();
+          };
+          laneEl.appendChild(makeBox(size, i*0.45, onEnd));
+        }
+      });
+    }
+
+    function render(){
+      tbody.innerHTML='';
+      rows.forEach((r,i)=>{
+        const tr=document.createElement('tr');
+        const area=(r.len*r.wid).toFixed(2);
+        const maxD=Math.max(r.len,r.wid);
+        let sizeLabel='Small', sizeClass='ok';
+        if(maxD>2 && maxD<=4){ sizeLabel='Medium'; sizeClass='warn'; }
+        else if(maxD>4){ sizeLabel='Large'; sizeClass='bad'; }
+        tr.innerHTML=`
+          <td>${i+1}</td>
+          <td>${fmt2(r.len)}</td>
+          <td>${fmt2(r.wid)}</td>
+          <td>${r.qty}</td>
+          <td>${area}</td>
+          <td class="${sizeClass}">${sizeLabel}</td>
+          <td><button class="danger" data-i="${i}"><span class="i i-del"></span>Delete</button></td>`;
+        tbody.appendChild(tr);
+      });
+
+      hydrateIcons();
+
+      tbody.querySelectorAll('button[data-i]').forEach(btn=>{
+        btn.addEventListener('click', e=>{
+          const idx=+e.currentTarget.getAttribute('data-i');
+          rows.splice(idx,1); renderAll();
+        });
+      });
+
+      if(rows.length===0){
+        settingsOut.innerHTML='<div class="muted">Add items to view settings and predictions.</div>';
+        chips.innerHTML='';
+        etaAI.textContent='Total Time (AI): —';
+        etaManual.textContent='Total Time (Manual): —';
+        msg.textContent='';
+        return;
+      }
+
+      const s=factorySettings(rows);
+      const totalAI   = predictTotalAI(rows);
+      const totalMan  = predictTotalManual(rows);
+      const start = new Date();
+      const end   = new Date(start.getTime() + totalAI*60000);
+
+      const rankedRaw = rows
+        .map((r,idx)=>({ idx, len:r.len, wid:r.wid, qty:r.qty, area: r.len*r.wid, load: (r.len*r.wid)*r.qty, cat: catKeyOf(r.len,r.wid) }))
+        .sort(cmp);
+      const ranked = reorderNoConsecutive(rankedRaw);
+
+      const orderText = ranked
+        .map(p => `#${p.idx+1} (${labelCat(p.cat)}, qty ${p.qty})`)
+        .join(' → ');
+
+      settingsOut.innerHTML=`
+        <div class="settings">
+          <div class="note"><strong>Start Time:</strong> ${formatTime(start)}</div>
+          <div class="note"><strong>End Time (AI):</strong> ${formatTime(end)}</div>
+          <div class="note"><strong>Order:</strong> ${orderText}</div>
+          <div class="note"><strong>Sizes status + speeds:</strong>
+            <div class="chips" style="margin-top:6px">
+              <span class="chip" id="b1"></span>
+              <span class="chip" id="b2"></span>
+              <span class="chip" id="b3"></span>
+            </div>
+          </div>
+        </div>
+        <div class="hint">If only one size remains at the end, a rare consecutive repeat may appear.</div>`;
+
+      const hasSmall  = rows.some(r=>catKeyOf(r.len,r.wid)==='small');
+      const hasMedium = rows.some(r=>catKeyOf(r.len,r.wid)==='medium');
+      const hasLarge  = rows.some(r=>catKeyOf(r.len,r.wid)==='large');
+
+      const base = s.speed, clamp=v=>Math.min(30,Math.max(8,Math.round(v)));
+      const speedFor = k => k==='small'?clamp(base*1.20):k==='medium'?clamp(base*1.00):clamp(base*0.80);
+
+      document.getElementById('b1').innerHTML = `<span class="${hasSmall?'on':'off'}">${hasSmall?ICONS.dotOn:ICONS.dotOff} Small: ${speedFor('small')} u/min</span>`;
+      document.getElementById('b2').innerHTML = `<span class="${hasMedium?'on':'off'}">${hasMedium?ICONS.dotOn:ICONS.dotOff} Medium: ${speedFor('medium')} u/min</span>`;
+      document.getElementById('b3').innerHTML = `<span class="${hasLarge?'on':'off'}">${hasLarge?ICONS.dotOn:ICONS.dotOff} Large: ${speedFor('large')} u/min</span>`;
+
+      const maxDim=Math.max(...rows.map(r=>Math.max(r.len,r.wid)));
+      chips.innerHTML='';
+      const frag=document.createDocumentFragment();
+      [ `Max dimension: ${fmt2(maxDim)} m`, `Max width: ${fmt2(s.maxWid)} m`, `Distinct batches: ${rows.length}` ]
+        .forEach(t=>{ const span=document.createElement('span'); span.className='chip'; span.textContent=t; frag.appendChild(span); });
+      chips.appendChild(frag);
+
+      etaAI.innerHTML     = `<strong>Total Time (AI):</strong> ${formatMinutes(totalAI)}`;
+      etaManual.innerHTML = `<strong>Total Time (Manual):</strong> ${formatMinutes(totalMan)}`;
+
+      if(!headerClock.dataset.running){
+        headerClock.dataset.running="1";
+        setInterval(()=>{ headerClock.textContent = `Local time: ${formatTime(new Date())}`; },1000);
+      }
+    }
+
+    function renderAll(){ render(); }
+
+    function startModalClock(openSpeed){
+      const openedAt = new Date();
+      rtOpened.textContent = formatTime(openedAt);
+      rtSpeed.textContent  = `${openSpeed} u/min`;
+      if(clockTimer) clearInterval(clockTimer);
+      const tick = ()=>{ rtNow.textContent = formatTime(new Date()); };
+      tick();
+      clockTimer = setInterval(tick, 1000);
+    }
+    function stopModalClock(){ if(clockTimer){ clearInterval(clockTimer); clockTimer=null; } }
+
+    document.getElementById('addBtn').addEventListener('click', ()=>{
+      const len=+document.getElementById('len').value, wid=+document.getElementById('wid').value, qty=+document.getElementById('qty').value;
+      if(!isFinite(len)||!isFinite(wid)||!isFinite(qty)||len<=0||wid<=0||qty<1){ msg.innerHTML='<span class="bad">Check:</span> Please enter valid values.'; return; }
+      if(len>6||wid>6){ msg.innerHTML='<span class="bad">Error:</span> Max length/width is 6 m.'; return; }
+      rows.push({len, wid, qty});
+      document.getElementById('len').value=''; document.getElementById('wid').value=''; document.getElementById('len').focus();
+      renderAll();
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', ()=>{ rows=[]; renderAll(); });
+
+    trackBtn.addEventListener('click', ()=>{
+      modal.style.display='grid';
+      initTimeline();
+      const s = factorySettings(rows);
+      startModalClock(s.speed);
+      buildSim();
+      hydrateIcons();
+    });
+    document.getElementById('xClose').addEventListener('click', ()=>{
+      modal.style.display='none'; clearSim(); stopModalClock();
+    });
+    modal.addEventListener('click', (e)=>{
+      if(e.target===modal){ modal.style.display='none'; clearSim(); stopModalClock(); }
+    });
+    window.addEventListener('keydown', (e)=>{
+      if(e.key==='Escape' && modal.style.display==='grid'){ modal.style.display='none'; clearSim(); stopModalClock(); }
+    });
+
+    renderAll();
+    hydrateIcons();
+  </script>
+</body>
+</html>
