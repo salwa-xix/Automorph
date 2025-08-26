@@ -343,12 +343,12 @@
         <h2>Add Product</h2>
         <div class="row" role="group" aria-label="Add Product">
           <div>
-            <label for="len">Length (cm) — ≤ 6</label>
-            <input id="len" type="number" min="0.1" max="6" step="0.01" placeholder="e.g., 1.20"/>
+            <label for="len">Length (cm) — ≤ 80</label>
+            <input id="len" type="number" min="0.1" max="80" step="0.01" placeholder="e.g., 1.20"/>
           </div>
           <div>
-            <label for="wid">Width (cm) — ≤ 6</label>
-            <input id="wid" type="number" min="0.1" max="6" step="0.01" placeholder="e.g., 1.20"/>
+            <label for="wid">Width (cm) — ≤ 80</label>
+            <input id="wid" type="number" min="0.1" max="80" step="0.01" placeholder="e.g., 1.20"/>
           </div>
           <div>
             <label for="qty">Quantity</label>
@@ -365,7 +365,7 @@
           <table id="tbl" aria-label="Products list">
             <thead>
               <tr>
-                <th>#</th><th>Length (cm)</th><th>Width (cm)</th><th>Qty</th><th>Area (cm²)</th><th>Size</th><th></th>
+                <th>#</th><th>Length (cm)</th><th>Width (cm)</th><th>Qty</th><th>Area (m²)</th><th>Size</th><th></th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -917,7 +917,7 @@
     document.getElementById('addBtn').addEventListener('click', ()=>{
       const len=+document.getElementById('len').value, wid=+document.getElementById('wid').value, qty=+document.getElementById('qty').value;
       if(!isFinite(len)||!isFinite(wid)||!isFinite(qty)||len<=0||wid<=0||qty<1){ msg.innerHTML='<span class="bad">Check:</span> Please enter valid values.'; return; }
-      if(len>6||wid>6){ msg.innerHTML='<span class="bad">Error:</span> Max length/width is 6 m.'; return; }
+      if(len>80||wid>80){ msg.innerHTML='<span class="bad">Error:</span> Max length/width is 80 cm.'; return; }
       rows.push({len, wid, qty});
       document.getElementById('len').value=''; document.getElementById('wid').value=''; document.getElementById('len').focus();
       // إضافة منتج جديد يلغي حالة الـ Packing السابقة
@@ -951,3 +951,4 @@
   </script>
 </body>
 </html>
+
