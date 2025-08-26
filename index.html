@@ -100,7 +100,6 @@
       color:#06121e;
       background: linear-gradient(180deg, var(--cta-1), var(--cta-2));
       border:1px solid rgba(37,99,235,.45);
-      /* removed glow: */
       box-shadow: none;
     }
     .cta:hover{ filter:brightness(1.03) }
@@ -118,7 +117,7 @@
     .ok{ color:var(--ok); font-weight:800 }
 
     .chips{ display:flex; flex-wrap:wrap; gap:8px }
-    .chip{ background: var(--chip); border:1px solid var(--stroke-strong); color:#e5e7eb; padding:8px 10px; border-radius:999px; font-size:12px }
+    .chip{ background: var(--chip); border:1px solid var(--stroke-strong); color:#e5e7eb; padding:8px 10px; border-radius:999px; font-size:12px; display:inline-flex; align-items:center; gap:6px }
 
     .settings{ display:grid; grid-template-columns: 1fr 1fr; gap:10px }
     @media (max-width: 720px){ .settings{ grid-template-columns: 1fr; } }
@@ -163,61 +162,83 @@
     .step.perma .dot{ background:linear-gradient(180deg,#1b2330,#151a22); border-color:var(--stroke-strong); color:#94a3b8; }
     .step.locked{ opacity:.6; filter:saturate(.7) }
 
-    /* ====== Real-time blocks: صف واحد ببلوكات ====== */
+    /* ====== Real-time blocks ====== */
     .rtbar{
       display:grid;
-      grid-auto-flow: column;                 /* صف أفقي */
-      grid-auto-columns: minmax(180px, 1fr);  /* كل بلوك عرض أدنى ثابت */
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(180px, 1fr);
       gap:10px;
       margin-bottom:12px;
-      overflow-x:auto;                        /* سكرول أفقي عند الحاجة */
-      padding-bottom:6px;                     /* مساحة صغيرة تحت للسكرول */
+      overflow-x:auto;
+      padding-bottom:6px;
       scrollbar-width: thin;
     }
-    /* اجعل KPIs صف أفقي كبلاكات */
-.kpis{
-  display: grid;
-  grid-auto-flow: column;                /* يمشي أفقي */
-  grid-auto-columns: minmax(160px, 1fr); /* عرض ثابت لكل بلوك */
-  gap: 10px;
-  overflow-x: auto;                      /* سكرول عند الحاجة */
-  padding-bottom: 6px;                   /* مساحة لشريط السكرول */
-  scrollbar-width: thin;
-}
-.kpis .kpi{
-  background: linear-gradient(180deg,#171d26,#121821);
-  border: 1px solid var(--stroke);
-  padding: 12px;
-  border-radius: 12px;
-  min-height: 64px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.kpis .kpi .l{ font-size:12px; color:var(--muted); margin-bottom:4px }
-.kpis .kpi .v{ font-size:18px; font-weight:900; color:#eaeef6; line-height:1.2 }
 
-@media (max-width: 640px){
-  .kpis{ 
-    grid-auto-columns: minmax(100px,1fr);  /* البلوكات أضيق */
-    gap:6px;
-  }
-  .kpis .kpi{ 
-    padding:8px; 
-    min-height:48px; 
-    border-radius:8px;
-  }
-  .kpis .kpi .l{ font-size:10px }
-  .kpis .kpi .v{ font-size:13px }
+    /* KPIs */
+    .kpis{
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(160px, 1fr);
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: thin;
+    }
+    .kpis .kpi{
+      background: linear-gradient(180deg,#171d26,#121821);
+      border: 1px solid var(--stroke);
+      padding: 12px;
+      border-radius: 12px;
+      min-height: 64px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .kpis .kpi .l{ font-size:12px; color:var(--muted); margin-bottom:4px }
+    .kpis .kpi .v{ font-size:18px; font-weight:900; color:#eaeef6; line-height:1.2 }
 
-  /* برضو صغر الخطوط في باقي النصوص */
-  body{ font-size:13px }
-  h2{ font-size:16px }
-  .time{ font-size:14px }
-  .note{ font-size:12px }
-  button{ padding:8px 10px; font-size:13px }
-  table{ font-size:12px }
-}
+    /* ============== Order (visual) ============== */
+    .order-viz{
+      display:grid;
+      grid-auto-flow: row;
+      gap:8px;
+      padding:6px 0;
+    }
+    .order-box{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:12px;
+      background:linear-gradient(180deg,#171d26,#121821);
+      border:1px solid var(--stroke-strong);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+      font-size:12px;
+      white-space:nowrap;
+      width: fit-content;
+    }
+    .order-box .tag{
+      font-weight:900; font-size:11px; padding:3px 6px; border-radius:6px; border:1px solid transparent;
+    }
+    .order-box.small { border-color: rgba(34,197,94,.35) }
+    .order-box.medium{ border-color: rgba(245,158,11,.35) }
+    .order-box.large { border-color: rgba(239,68,68,.35) }
+
+    .order-box.small  .tag{ background:rgba(34,197,94,.15);  color:#86efac; border-color:rgba(34,197,94,.35) }
+    .order-box.medium .tag{ background:rgba(245,158,11,.15); color:#facc15; border-color:rgba(245,158,11,.35) }
+    .order-box.large  .tag{ background:rgba(239,68,68,.15);  color:#fca5a5; border-color:rgba(239,68,68,.35) }
+
+    @media (max-width: 640px){
+      .kpis{ grid-auto-columns: minmax(100px,1fr); gap:6px; }
+      .kpis .kpi{ padding:8px; min-height:48px; border-radius:8px; }
+      .kpis .kpi .l{ font-size:10px }
+      .kpis .kpi .v{ font-size:13px }
+
+      body{ font-size:13px }
+      h2{ font-size:16px }
+      .time{ font-size:14px }
+      .note{ font-size:12px }
+      button{ padding:8px 10px; font-size:13px }
+      table{ font-size:12px }
+      .order-box{ font-size:11px; padding:6px 8px }
+    }
 
     /* Conveyor sim */
     .sim{ margin-top:8px; border:1px solid var(--stroke); border-radius:14px; padding:14px; background:linear-gradient(180deg, #131821, #0f141a); }
@@ -250,91 +271,57 @@
       header{ justify-content:center; text-align:center }
     }
 
-
     /* 📱 نسخة مضغوطة للموبايل */
-@media (max-width: 640px){
-  body{ font-size:12px }
+    @media (max-width: 640px){
+      body{ font-size:12px }
+      h1{ font-size:18px }
+      h2{ font-size:14px; margin-bottom:8px }
+      .sub{ font-size:11px }
+      button{ padding:6px 8px; font-size:12px; border-radius:8px; }
+      input[type="number"]{ padding:8px; font-size:12px; border-radius:8px; }
+      table{ font-size:11px }
+      th, td{ padding:6px 4px }
+      .note{ font-size:11px; padding:6px }
+      .time{ font-size:12px; margin-top:4px }
+      .hint, .footer{ font-size:10px }
 
-  h1{ font-size:18px }
-  h2{ font-size:14px; margin-bottom:8px }
-  .sub{ font-size:11px }
+      .kpis{ grid-auto-columns: minmax(80px,1fr); gap:5px; }
+      .kpis .kpi{ padding:6px; min-height:40px; border-radius:6px }
+      .kpis .kpi .l{ font-size:9px }
+      .kpis .kpi .v{ font-size:12px }
 
-  /* أزرار */
-  button{ 
-    padding:6px 8px; 
-    font-size:12px; 
-    border-radius:8px;
-  }
+      .modal{ width:95vw }
+      .modal h3{ font-size:13px }
+      .modal .body{ padding:10px }
 
-  /* حقول إدخال */
-  input[type="number"]{
-    padding:8px; 
-    font-size:12px; 
-    border-radius:8px;
-  }
+      .rtbar{ grid-auto-columns: minmax(90px,1fr); gap:5px; }
+      .rtbar .kpi{ padding:6px; min-height:40px; border-radius:6px }
+      .rtbar .kpi .l{ font-size:9px }
+      .rtbar .kpi .v{ font-size:12px }
 
-  /* جدول */
-  table{ font-size:11px }
-  th, td{ padding:6px 4px }
+      .modal{ width:95vw }
+      .modal h3{ font-size:13px }
+      .modal .body{ padding:10px }
+    }
 
-  /* الملاحظات / النصوص */
-  .note{ font-size:11px; padding:6px }
-  .time{ font-size:12px; margin-top:4px }
-  .hint, .footer{ font-size:10px }
+    /* ✅ خط الإنتاج (تصغيره) */
+    .belt{ height:36px }
+    .branch{ height:30px }
+    .box{ width:16px; height:16px }
+    .box.small{ width:14px; height:14px; top:8px }
+    .box.medium{ width:16px; height:16px; top:9px }
+    .box.large{ width:20px; height:20px; top:7px }
 
-  /* KPIs */
-  .kpis{ 
-    grid-auto-columns: minmax(80px,1fr); 
-    gap:5px; 
-  }
-  .kpis .kpi{ 
-    padding:6px; 
-    min-height:40px; 
-    border-radius:6px;
-  }
-  .kpis .kpi .l{ font-size:9px }
-  .kpis .kpi .v{ font-size:12px }
-
-  /* البوب-أب */
-  .modal{ width:95vw }
-  .modal h3{ font-size:13px }
-  .modal .body{ padding:10px }
-
-
-  .rtbar{ 
-    grid-auto-columns: minmax(90px,1fr); 
-    gap:5px; 
-  }
-  .rtbar .kpi{ padding:6px; min-height:40px; border-radius:6px }
-  .rtbar .kpi .l{ font-size:9px }
-  .rtbar .kpi .v{ font-size:12px }
-
-  /* البوب-بيج */
-  .modal{ width:95vw }
-  .modal h3{ font-size:13px }
-  .modal .body{ padding:10px }
-}
-
-  /* ✅ خط الإنتاج (تصغيره) */
-  .belt{ height:36px }               /* كان ~52px */
-  .branch{ height:30px }             /* كان ~40px */
-  .box{ width:16px; height:16px }    /* أصغر صناديق */
-  .box.small{ width:14px; height:14px; top:8px }
-  .box.medium{ width:16px; height:16px; top:9px }
-  .box.large{ width:20px; height:20px; top:7px }
-
-  @media (max-width: 640px){
-  .timeline .step .dot{ width:18px; height:18px }
-  .timeline .step .label{ font-size:11px }
-}
-
-
+    @media (max-width: 640px){
+      .timeline .step .dot{ width:18px; height:18px }
+      .timeline .step .label{ font-size:11px }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="logo" aria-hidden="true"></div>
+      <div class="loo" aria-hidden="true"></div>
       <div>
         <h1>Auto<span class="brand-accent">morph</span></h1>
         <div class="sub" id="headerClock"></div>
@@ -347,11 +334,11 @@
         <h2>Add Product</h2>
         <div class="row" role="group" aria-label="Add Product">
           <div>
-            <label for="len">Length (m) — ≤ 6</label>
+            <label for="len">Length (cm) — ≤ 6</label>
             <input id="len" type="number" min="0.1" max="6" step="0.01" placeholder="e.g., 1.20"/>
           </div>
           <div>
-            <label for="wid">Width (m) — ≤ 6</label>
+            <label for="wid">Width (cm) — ≤ 6</label>
             <input id="wid" type="number" min="0.1" max="6" step="0.01" placeholder="e.g., 1.20"/>
           </div>
           <div>
@@ -369,7 +356,7 @@
           <table id="tbl" aria-label="Products list">
             <thead>
               <tr>
-                <th>#</th><th>Length (m)</th><th>Width (m)</th><th>Qty</th><th>Area (m²)</th><th>Size</th><th></th>
+                <th>#</th><th>Length (cm)</th><th>Width (cm)</th><th>Qty</th><th>Area (m²)</th><th>Size</th><th></th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -391,7 +378,6 @@
         </div>
 
         <div style="display:flex; justify-content:flex-end; margin-top:12px;">
-          <!-- شِلنا btn-pulse -->
           <button class="cta" id="trackBtn" title="Open tracking"><span class="i i-track"></span>Tracking</button>
         </div>
 
@@ -426,7 +412,7 @@
           </div>
         </div>
 
-        <!-- Real-time blocks: صف واحد -->
+        <!-- Real-time blocks -->
         <div class="rtbar">
           <div class="kpi"><div class="l">Now</div><div class="v" id="rtNow">--:--:--</div></div>
           <div class="kpi"><div class="l">Opened at</div><div class="v" id="rtOpened">--:--:--</div></div>
@@ -471,6 +457,7 @@
       });
     }
 
+    /* ==== tiny linear model for ETA ==== */
     const training = [
       [0.5,0.5,10,120],[1.0,1.0,20,260],[1.5,1.5,15,310],[2.0,2.0,10,290],
       [2.0,1.0,30,420],[2.5,2.0,25,620],[3.0,3.0,12,540],[3.0,2.0,40,860],
@@ -478,7 +465,6 @@
       [5.0,5.0,6,980],[5.5,1.0,60,1600],[5.5,3.0,30,1500],[6.0,1.5,45,1750],
       [6.0,2.5,20,1400],[6.0,6.0,4,1200],
     ];
-
     const mat = {
       T: A => A[0].map((_, i) => A.map(r => r[i])),
       dot: (A, B) => A.map(r => B[0].map((_, j) => r.reduce((s, v, k) => s + v * B[k][j], 0))),
@@ -489,7 +475,6 @@
           for(let i=0;i<n;i++) if(i!==c){ const f=A[i][c]; for(let j=0;j<n;j++){ A[i][j]-=f*A[c][j]; I[i][j]-=f*I[c][j]; } }
         } return I; }
     };
-
     function trainLinearModel(samples){
       const X = samples.map(([L,W,Q]) => [1, L*W, Math.max(L,W), Q]);
       const y = samples.map(s => [s[3]]);
@@ -501,7 +486,6 @@
       return B.map(r=>r[0]);
     }
     const BETA = trainLinearModel(training);
-
     function predictMinutes(len, wid, qty){
       const area=len*wid, maxD=Math.max(len,wid);
       let ml = BETA[0] + BETA[1]*area + BETA[2]*maxD + BETA[3]*qty;
@@ -520,7 +504,6 @@
       const speed = Math.min(30, Math.max(8, Math.round(8 + Math.max(maxLen,maxWid)*2)));
       return { totalQty, maxWid, beltW, speed };
     }
-
     function predictTotalAI(rows){
       const setupPerBatch = 3;
       const changeover    = Math.max(0, rows.length-1)*2;
@@ -561,7 +544,6 @@
 
     let rows = [];
     let clockTimer = null;
-    let openedAt = null;
 
     let remainingSmall = 0, remainingMedium = 0, remainingLarge = 0;
     let initialCounts = {small:0, medium:0, large:0, total:0};
@@ -576,47 +558,36 @@
     const labelCat = k => k==='small'?'Small':(k==='medium'?'Medium':'Large');
     function formatTime(d){ const pad=x=>String(x).padStart(2,'0'); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
 
-    function cmp(a,b){ return (b.qty - a.qty) || (b.load - a.load) || (b.area - a.area); }
+    /* ====== NEW ORDER LOGIC (avoid adjacency) ====== */
+    function reorderAvoidAdjacencyFromInput(inputList){
+      const queues = {small:[], medium:[], large:[]};
+      inputList.forEach(it => queues[it.cat].push(it));
 
-    function reorderNoConsecutive(list){
-      const small  = list.filter(x=>x.cat==='small').sort(cmp);
-      const medium = list.filter(x=>x.cat==='medium').sort(cmp);
-      const large  = list.filter(x=>x.cat==='large').sort(cmp);
-
-      function popBestNot(lastCat){
-        const cands = [];
-        if(small.length  && lastCat!=='small')  cands.push({cat:'small',  item:small[0]});
-        if(medium.length && lastCat!=='medium') cands.push({cat:'medium', item:medium[0]});
-        if(large.length  && lastCat!=='large')  cands.push({cat:'large',  item:large[0]});
-        if(cands.length){
-          cands.sort((a,b)=>cmp(a.item,b.item));
-          const chosen = cands[0];
-          if(chosen.cat==='small')  return small.shift();
-          if(chosen.cat==='medium') return medium.shift();
-          return large.shift();
-        }
-        const any = [];
-        if(small.length)  any.push({cat:'small',  item:small[0]});
-        if(medium.length) any.push({cat:'medium', item:medium[0]});
-        if(large.length)  any.push({cat:'large',  item:large[0]});
-        if(!any.length) return null;
-        any.sort((a,b)=>cmp(a["item"],b["item"]));
-        const fallback = any[0];
-        if(fallback.cat==='small')  return small.shift();
-        if(fallback.cat==='medium') return medium.shift();
-        return large.shift();
-      }
-
-      const out = [];
+      const takeOrder = [];
       let last = null;
-      while (small.length || medium.length || large.length){
-        const next = popBestNot(last);
-        if(!next) break;
-        out.push(next);
-        last = next.cat;
+
+      function pickNext(){
+        const opts = ['small','medium','large']
+          .filter(k => queues[k].length>0 && k!==last)
+          .sort((a,b)=> (queues[b].length - queues[a].length) || (queues[a][0].idx - queues[b][0].idx));
+        if(opts.length) return opts[0];
+
+        const fallback = ['small','medium','large']
+          .filter(k => queues[k].length>0)
+          .sort((a,b)=> (queues[b].length - queues[a].length) || (queues[a][0].idx - queues[b][0].idx))[0];
+        return fallback || null;
       }
-      return out;
+
+      while(queues.small.length + queues.medium.length + queues.large.length){
+        const cat = pickNext();
+        if(!cat) break;
+        takeOrder.push(queues[cat].shift());
+        last = cat;
+      }
+      return takeOrder;
     }
+
+    function cmp(a,b){ return (b.qty - a.qty) || (b.load - a.load) || (b.area - a.area); }
 
     function setStepState(key, state){
       const s = document.querySelector(`.step[data-k="${key}"]`);
@@ -637,8 +608,33 @@
       rows.forEach(r=>{ const k=catKeyOf(r.len,r.wid); c[k]+=r.qty; c.total+=r.qty; });
       return c;
     }
+
+    /* ====== Activation Branch (chips with dots only) ====== */
+    function renderBranchStatus(c){
+      const el = document.getElementById('branchStatus');
+      if(!el) return;
+      el.innerHTML = '';
+
+      const items = [
+        {label:'Small branch',  active:c.small>0},
+        {label:'Medium branch', active:c.medium>0},
+        {label:'Large branch',  active:c.large>0},
+      ];
+
+      items.forEach(it=>{
+        const chip = document.createElement('span');
+        chip.className = 'chip';
+        chip.innerHTML = `
+          ${it.active ? ICONS.dotOn : ICONS.dotOff}
+          <span style="vertical-align:middle;">${it.label}</span>
+        `;
+        el.appendChild(chip);
+      });
+    }
+
     function buildKpisStatic(){
       const c = initialCounts;
+      const kpis = document.getElementById('kpis');
       kpis.innerHTML = '';
       [
         ['Total items', c.total],
@@ -669,9 +665,9 @@
 
     function clearSim(){
       belt.innerHTML='';
-      bSmall.innerHTML='<span class="label">Small branch</span>';
-      bMedium.innerHTML='<span class="label">Medium branch</span>';
-      bLarge.innerHTML='<span class="label">Large branch</span>';
+      bSmall.innerHTML='<span class="label">Sm branch</span>';
+      bMedium.innerHTML='<span class="label">Med branch</span>';
+      bLarge.innerHTML='<span class="label">Lar branch</span>';
       [bSmall,bMedium,bLarge].forEach(b=>{ b.classList.remove('active'); b.classList.add('idle'); });
       belt.classList.remove('flow');
     }
@@ -728,6 +724,22 @@
       });
     }
 
+    /* ======== Order rendering (no #, show letter + text) ======== */
+    function renderOrderViz(list){
+      const container = document.getElementById('orderViz');
+      if(!container) return;
+      container.innerHTML = '';
+      list.forEach(p=>{
+        const el = document.createElement('div');
+        el.className = `order-box ${p.cat}`;
+        const tag = p.cat==='small'?'S - product':(p.cat==='medium'?'M  - product':'L  - product');
+        el.innerHTML = `
+          <span class="tag">${tag}</span>
+        `;
+        container.appendChild(el);
+      });
+    }
+
     function render(){
       tbody.innerHTML='';
       rows.forEach((r,i)=>{
@@ -744,7 +756,7 @@
           <td>${r.qty}</td>
           <td>${area}</td>
           <td class="${sizeClass}">${sizeLabel}</td>
-          <td><button class="danger" data-i="${i}"><span class="i i-del"></span>Delete</button></td>`;
+          <td><button class="danger" class="delBtn" data-i="${i}"><span class="i i-del"></span>Delete</button></td>`;
         tbody.appendChild(tr);
       });
 
@@ -772,44 +784,41 @@
       const start = new Date();
       const end   = new Date(start.getTime() + totalAI*60000);
 
-      const rankedRaw = rows
-        .map((r,idx)=>({ idx, len:r.len, wid:r.wid, qty:r.qty, area: r.len*r.wid, load: (r.len*r.wid)*r.qty, cat: catKeyOf(r.len,r.wid) }))
-        .sort(cmp);
-      const ranked = reorderNoConsecutive(rankedRaw);
+      // sequence from input per category, avoid adjacency
+      const inputSeq = rows.map((r,idx)=>({
+        idx, len:r.len, wid:r.wid, qty:r.qty,
+        area: r.len*r.wid,
+        load: (r.len*r.wid)*r.qty,
+        cat: catKeyOf(r.len,r.wid)
+      }));
+      const ordered = reorderAvoidAdjacencyFromInput(inputSeq);
 
-      const orderText = ranked
-        .map(p => `#${p.idx+1} (${labelCat(p.cat)}, qty ${p.qty})`)
-        .join(' → ');
-
+      // Settings panel (now includes order + activation branch without ON/OFF)
       settingsOut.innerHTML=`
         <div class="settings">
           <div class="note"><strong>Start Time:</strong> ${formatTime(start)}</div>
           <div class="note"><strong>End Time (AI):</strong> ${formatTime(end)}</div>
-          <div class="note"><strong>Order:</strong> ${orderText}</div>
-          <div class="note"><strong>Sizes status + speeds:</strong>
-            <div class="chips" style="margin-top:6px">
-              <span class="chip" id="b1"></span>
-              <span class="chip" id="b2"></span>
-              <span class="chip" id="b3"></span>
-            </div>
+
+          <div class="note">
+            <strong>order:</strong>
+            <div id="orderViz" class="order-viz" style="margin-top:8px"></div>
+          </div>
+
+          <div class="note">
+            <strong>Activation Branch:</strong>
+            <div id="branchStatus" class="chips" style="margin-top:8px"></div>
           </div>
         </div>
-        <div class="hint">If only one size remains at the end, a rare consecutive repeat may appear.</div>`;
+        <div class="hint"></div>`;
 
-      const hasSmall  = rows.some(r=>catKeyOf(r.len,r.wid)==='small');
-      const hasMedium = rows.some(r=>catKeyOf(r.len,r.wid)==='medium');
-      const hasLarge  = rows.some(r=>catKeyOf(r.len,r.wid)==='large');
+      // build order + activation chips
+      renderOrderViz(ordered);
+      renderBranchStatus(countBySize());
 
-      const base = s.speed, clamp=v=>Math.min(30,Math.max(8,Math.round(v)));
-      const speedFor = k => k==='small'?clamp(base*1.20):k==='medium'?clamp(base*1.00):clamp(base*0.80);
-
-      document.getElementById('b1').innerHTML = `<span class="${hasSmall?'on':'off'}">${hasSmall?ICONS.dotOn:ICONS.dotOff} Small: ${speedFor('small')} u/min</span>`;
-      document.getElementById('b2').innerHTML = `<span class="${hasMedium?'on':'off'}">${hasMedium?ICONS.dotOn:ICONS.dotOff} Medium: ${speedFor('medium')} u/min</span>`;
-      document.getElementById('b3').innerHTML = `<span class="${hasLarge?'on':'off'}">${hasLarge?ICONS.dotOn:ICONS.dotOff} Large: ${speedFor('large')} u/min</span>`;
-
-      const maxDim=Math.max(...rows.map(r=>Math.max(r.len,r.wid)));
+      // Chips معلومات عامة
       chips.innerHTML='';
       const frag=document.createDocumentFragment();
+      const maxDim=Math.max(...rows.map(r=>Math.max(r.len,r.wid)));
       [ `Max dimension: ${fmt2(maxDim)} m`, `Max width: ${fmt2(s.maxWid)} m`, `Distinct batches: ${rows.length}` ]
         .forEach(t=>{ const span=document.createElement('span'); span.className='chip'; span.textContent=t; frag.appendChild(span); });
       chips.appendChild(frag);
@@ -870,4 +879,3 @@
   </script>
 </body>
 </html>
-
