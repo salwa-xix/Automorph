@@ -16,6 +16,10 @@
 
       /* CTA (tracking button) */
       --cta-1:#60a5fa; --cta-2:#2563eb;
+
+      /* ⏱ سرعات الأنيميشن داخل البوب أب (أبطأ) */
+      --belt-speed: 2.2s;   /* كان ~1.1s */
+      --box-speed: 7.2s;    /* كان ~5.2s */
     }
 
     *{ box-sizing: border-box }
@@ -132,9 +136,6 @@
     .note{ font-size:13px; padding:10px 12px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)); border:1px dashed var(--stroke-strong) }
     .notice{ color:#e5e7eb }
 
-    .on{ color: var(--ok); font-weight: 800 }
-    .off{ color: var(--danger); font-weight: 800 }
-
     /* ================= Modal ================= */
     .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; place-items:center; z-index:50; backdrop-filter: blur(2px); }
     .modal{ width:min(920px, 92vw); background:linear-gradient(180deg, #161b23, #0f141a); border:1px solid var(--stroke-strong); border-radius:18px; box-shadow: var(--shadow); overflow:hidden }
@@ -161,6 +162,14 @@
     .step.current .dot{ box-shadow:none; border-color:rgba(34,197,94,.55); }
     .step.perma .dot{ background:linear-gradient(180deg,#1b2330,#151a22); border-color:var(--stroke-strong); color:#94a3b8; }
     .step.locked{ opacity:.6; filter:saturate(.7) }
+
+    /* ⚠️ تحذير الـ Packing */
+    .pack-banner{
+      margin:-2px 0 12px; padding:10px 12px; border-radius:12px;
+      background:linear-gradient(180deg, rgba(34,197,94,.12), rgba(34,197,94,.06));
+      border:1px solid rgba(34,197,94,.35); color:#bbf7d0; font-size:13px; display:none;
+    }
+    .pack-banner.show{ display:block }
 
     /* ====== Real-time blocks ====== */
     .rtbar{
@@ -246,7 +255,7 @@
     .belt.flow::before{
       content:""; position:absolute; inset:0;
       background: repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 18px, transparent 18px 36px);
-      animation: beltMove 1.1s linear infinite; opacity:.35;
+      animation: beltMove var(--belt-speed) linear infinite; opacity:.35;
     }
     .belt::after{ content:""; position:absolute; inset:0; box-shadow: inset 0 6px 14px rgba(0,0,0,.35), inset 0 -6px 14px rgba(0,0,0,.25) }
     @keyframes beltMove{ from{ background-position:0 0 } to{ background-position:-120px 0 } }
@@ -258,7 +267,7 @@
     .branch.active{ box-shadow:none; border-style: solid }
 
     .box{ position:absolute; top:9px; width:22px; height:22px; border-radius:6px; background:#d1d5db; border:1px solid rgba(0,0,0,.3);
-      animation: move 5.2s linear forwards; transform: translateX(-30px);
+      animation: move var(--box-speed) linear forwards; transform: translateX(-30px);
     }
     .box.small{ height:18px; width:18px; top:11px }
     .box.medium{ height:22px; width:22px }
@@ -397,6 +406,8 @@
         <button class="x" id="xClose" aria-label="Close"><span class="i i-x"></span></button>
       </header>
       <div class="body">
+        <div id="packBanner" class="pack-banner">⚠️ All items are finished — moved to <b>Packing</b> stage.</div>
+
         <!-- Timeline -->
         <div class="timeline" id="timeline">
           <div class="step done" data-k="time">
@@ -408,7 +419,7 @@
           </div>
           <div class="connector"></div>
           <div class="step locked perma" data-k="delivery" title="Delivery stays disabled">
-            <div class="dot"><span class="i i-truck"></span></div><div class="label">Delivery</div>
+            <div class="dot"><span class="i i-truck"></span></div><div class="label">Packing</div>
           </div>
         </div>
 
@@ -445,8 +456,6 @@
       clock:'<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>',
       check:'<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/></svg>',
       truck:'<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M3 7h11v7H3zM14 10h4l2 3v1h-6z" fill="currentColor"/><circle cx="7" cy="18" r="2" fill="currentColor"/><circle cx="17" cy="18" r="2" fill="currentColor"/></svg>',
-      dotOn:'<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="#22c55e"/></svg>',
-      dotOff:'<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="#ef4444"/></svg>',
       del:'<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
     };
     function hydrateIcons(){
@@ -472,9 +481,25 @@
         for(let c=0;c<n;c++){ let r=c; for(let i=c+1;i<n;i++) if(Math.abs(A[i][c])>Math.abs(A[r][c])) r=i; if(Math.abs(A[r][c])<1e-12) throw new Error('singular');
           if(r!==c){ [A[c],A[r]]=[A[r],A[c]]; [I[c],I[r]]=[I[r],I[c]]; }
           const piv=A[c][c]; for(let j=0;j<n;j++){ A[c][j]/=piv; I[c][j]/=piv; }
-          for(let i=0;i<n;i++) if(i!==c){ const f=A[i][c]; for(let j=0;j<n;j++){ A[i][j]-=f*A[c][j]; I[i][j]-=f*I[c][j]; } }
+          for(let i=0;i<n;i++) if(i!==c){ const f=A[i][c]; for(let j=0;j<n;j++){ A[i][j]-=f*A[c][j]; I[i][j]-=f*I[i][j]+0; I[i][j]-=f*I[c][j]; } }
         } return I; }
     };
+    // fix small bug in inv4 inner loop:
+    mat.inv4 = (M)=>{ const n=4; const A=M.map(r=>r.slice()); const I=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?1:0));
+      for(let c=0;c<n;c++){
+        let r=c; for(let i=c+1;i<n;i++) if(Math.abs(A[i][c])>Math.abs(A[r][c])) r=i;
+        const piv=A[r][c]; if(Math.abs(piv)<1e-12) throw new Error('singular');
+        if(r!==c){ [A[c],A[r]]=[A[r],A[c]]; [I[c],I[r]]=[I[r],I[c]]; }
+        const pv=A[c][c];
+        for(let j=0;j<n;j++){ A[c][j]/=pv; I[c][j]/=pv; }
+        for(let i=0;i<n;i++) if(i!==c){
+          const f=A[i][c];
+          for(let j=0;j<n;j++){ A[i][j]-=f*A[c][j]; I[i][j]-=f*I[c][j]; }
+        }
+      }
+      return I;
+    };
+
     function trainLinearModel(samples){
       const X = samples.map(([L,W,Q]) => [1, L*W, Math.max(L,W), Q]);
       const y = samples.map(s => [s[3]]);
@@ -541,12 +566,15 @@
     const rtDone = $('#rtDone');
     const rtTotal = $('#rtTotal');
     const rtSpeed = $('#rtSpeed');
+    const packBanner = $('#packBanner');
 
     let rows = [];
     let clockTimer = null;
 
     let remainingSmall = 0, remainingMedium = 0, remainingLarge = 0;
     let initialCounts = {small:0, medium:0, large:0, total:0};
+
+    let packingReached = false;
 
     function formatMinutes(min){
       if(min <= 90) return `${min} min`;
@@ -558,7 +586,6 @@
     const labelCat = k => k==='small'?'Small':(k==='medium'?'Medium':'Large');
     function formatTime(d){ const pad=x=>String(x).padStart(2,'0'); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }
 
-    /* ====== NEW ORDER LOGIC (avoid adjacency) ====== */
     function reorderAvoidAdjacencyFromInput(inputList){
       const queues = {small:[], medium:[], large:[]};
       inputList.forEach(it => queues[it.cat].push(it));
@@ -587,8 +614,6 @@
       return takeOrder;
     }
 
-    function cmp(a,b){ return (b.qty - a.qty) || (b.load - a.load) || (b.area - a.area); }
-
     function setStepState(key, state){
       const s = document.querySelector(`.step[data-k="${key}"]`);
       if(!s) return;
@@ -598,10 +623,15 @@
     }
     function initTimeline(){
       setStepState('time','done');
-      setStepState('paper','locked');
+      setStepState('paper', packingReached ? 'done' : 'locked');
       setStepState('delivery','locked');
+      packBanner.classList.toggle('show', packingReached);
     }
-    function markPaperDone(){ setStepState('paper','done'); }
+    function markPaperDone(){
+      setStepState('paper','done');
+      packingReached = true;
+      packBanner.classList.add('show');
+    }
 
     function countBySize(){
       const c = { small:0, medium:0, large:0, total:0 };
@@ -609,27 +639,24 @@
       return c;
     }
 
-    /* ====== Activation Branch (chips with dots only) ====== */
+    /* ====== Activation Branch (dots only) ====== */
     function renderBranchStatus(c){
       const el = document.getElementById('branchStatus');
       if(!el) return;
       el.innerHTML = '';
 
-      const items = [
-        {label:'Small branch',  active:c.small>0},
-        {label:'Medium branch', active:c.medium>0},
-        {label:'Large branch',  active:c.large>0},
-      ];
-
-      items.forEach(it=>{
-        const chip = document.createElement('span');
-        chip.className = 'chip';
+      const mk = (label, on) => {
+        const chip=document.createElement('span');
+        chip.className='chip';
         chip.innerHTML = `
-          ${it.active ? ICONS.dotOn : ICONS.dotOff}
-          <span style="vertical-align:middle;">${it.label}</span>
+          <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" ${on?'fill="#22c55e"':'fill="#ef4444"'} /></svg>
+          <span style="vertical-align:middle;">${label}</span>
         `;
-        el.appendChild(chip);
-      });
+        return chip;
+      };
+      el.appendChild(mk('Small branch',  c.small>0));
+      el.appendChild(mk('Medium branch', c.medium>0));
+      el.appendChild(mk('Large branch',  c.large>0));
     }
 
     function buildKpisStatic(){
@@ -658,7 +685,7 @@
       rtTotal.textContent = initialCounts.total;
 
       if(remainingSmall<=0 && remainingMedium<=0 && remainingLarge<=0 && initialCounts.total>0){
-        markPaperDone();
+        if(!packingReached){ markPaperDone(); }
         belt.classList.remove('flow');
       }
     }
@@ -680,50 +707,6 @@
       return box;
     }
 
-    function buildSim(){
-      clearSim();
-      const c = countBySize();
-
-      const act = (el, on) => { el.classList.toggle('active', on); el.classList.toggle('idle', !on); };
-      act(bSmall,  c.small>0);
-      act(bMedium, c.medium>0);
-      act(bLarge,  c.large>0);
-
-      initialCounts = { ...c };
-      remainingSmall  = c.small;
-      remainingMedium = c.medium;
-      remainingLarge  = c.large;
-
-      buildKpisStatic();
-      updateKpisLive();
-
-      if(c.total === 0) return;
-
-      belt.classList.add('flow');
-
-      const total = Math.min(12, Math.max(3, c.total));
-      for(let i=0;i<total;i++){
-        const size = (i%3===0 && c.small>0) ? 'small'
-                    : (i%3===1 && c.medium>0) ? 'medium'
-                    : (c.large>0 ? 'large' : 'small');
-        belt.appendChild(makeBox(size, i*0.35));
-      }
-
-      const lanes = [ ['small', bSmall, c.small], ['medium', bMedium, c.medium], ['large', bLarge, c.large] ];
-      lanes.forEach(([size, laneEl, n])=>{
-        const count = Math.min(12, Math.max(0, n));
-        for(let i=0;i<count;i++){
-          const onEnd = ()=>{
-            if(size==='small'){  remainingSmall  = Math.max(0, remainingSmall-1); }
-            if(size==='medium'){ remainingMedium = Math.max(0, remainingMedium-1); }
-            if(size==='large'){  remainingLarge  = Math.max(0, remainingLarge-1); }
-            updateKpisLive();
-          };
-          laneEl.appendChild(makeBox(size, i*0.45, onEnd));
-        }
-      });
-    }
-
     /* ======== Order rendering (no #, show letter + text) ======== */
     function renderOrderViz(list){
       const container = document.getElementById('orderViz');
@@ -733,9 +716,7 @@
         const el = document.createElement('div');
         el.className = `order-box ${p.cat}`;
         const tag = p.cat==='small'?'S - product':(p.cat==='medium'?'M  - product':'L  - product');
-        el.innerHTML = `
-          <span class="tag">${tag}</span>
-        `;
+        el.innerHTML = `<span class="tag">${tag}</span>`;
         container.appendChild(el);
       });
     }
@@ -793,7 +774,7 @@
       }));
       const ordered = reorderAvoidAdjacencyFromInput(inputSeq);
 
-      // Settings panel (now includes order + activation branch without ON/OFF)
+      // Settings panel (includes order + activation branch)
       settingsOut.innerHTML=`
         <div class="settings">
           <div class="note"><strong>Start Time:</strong> ${formatTime(start)}</div>
@@ -845,37 +826,10 @@
     }
     function stopModalClock(){ if(clockTimer){ clearInterval(clockTimer); clockTimer=null; } }
 
-    document.getElementById('addBtn').addEventListener('click', ()=>{
-      const len=+document.getElementById('len').value, wid=+document.getElementById('wid').value, qty=+document.getElementById('qty').value;
-      if(!isFinite(len)||!isFinite(wid)||!isFinite(qty)||len<=0||wid<=0||qty<1){ msg.innerHTML='<span class="bad">Check:</span> Please enter valid values.'; return; }
-      if(len>6||wid>6){ msg.innerHTML='<span class="bad">Error:</span> Max length/width is 6 m.'; return; }
-      rows.push({len, wid, qty});
-      document.getElementById('len').value=''; document.getElementById('wid').value=''; document.getElementById('len').focus();
-      renderAll();
-    });
+    /* ====== NEW: جدولة الفروع المتزامنة لتوضيح عدم التزاحم ====== */
+    function scheduleBranchesFromOrdered(ordered){
+      const lanes = { small:[], medium:[], large:[] };
 
-    document.getElementById('clearBtn').addEventListener('click', ()=>{ rows=[]; renderAll(); });
-
-    trackBtn.addEventListener('click', ()=>{
-      modal.style.display='grid';
-      initTimeline();
-      const s = factorySettings(rows);
-      startModalClock(s.speed);
-      buildSim();
-      hydrateIcons();
-    });
-    document.getElementById('xClose').addEventListener('click', ()=>{
-      modal.style.display='none'; clearSim(); stopModalClock();
-    });
-    modal.addEventListener('click', (e)=>{
-      if(e.target===modal){ modal.style.display='none'; clearSim(); stopModalClock(); }
-    });
-    window.addEventListener('keydown', (e)=>{
-      if(e.key==='Escape' && modal.style.display==='grid'){ modal.style.display='none'; clearSim(); stopModalClock(); }
-    });
-
-    renderAll();
-    hydrateIcons();
-  </script>
-</body>
-</html>
+      let t = 0;              // زمن الدُفعة (ثواني)
+      const stepSolo = 0.55;  // فرق التأخير بين الدُفعات
+      const stepPair = 0.55;  // نفس التأخير للدُفعات المزدوجة (يبدؤوا سوا)
