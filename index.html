@@ -711,7 +711,7 @@
       list.forEach(p=>{
         const el = document.createElement('div');
         el.className = `order-box ${p.cat}`;
-        const tag = p.cat==='small'?'S - product':(p.cat==='medium'?'M  - product':'L  - product');
+        const tag = p.cat==='small'?'Small - product':(p.cat==='medium'?'Medium  - product':'Large - product');
         el.innerHTML = `<span class="tag">${tag}</span>`;
         container.appendChild(el);
       });
